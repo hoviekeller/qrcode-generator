@@ -1,0 +1,132 @@
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 12px;
+  overflow: hidden;
+  user-select: none;
+  font-family: arial, sans-serif;
+}
+
+.container .qrcode-text, .container .qrcode-svg {
+  border: 0;
+  padding: 0;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.container .qrcode-text {
+  margin-top: 10px;
+  border-top: solid 1px rgba(0,0,0,0.2);
+  border-bottom: solid 1px rgba(0,0,0,0.2);
+}
+
+.container .qrcode-text textarea {
+  border: 0;
+  color: #555;
+  margin: auto;
+  resize: none;
+  height: 116px;
+  outline: none;
+  font-size: 12px;
+  padding: 5px 10px;
+  display: inline-block;
+  background-color: #FFF;
+  width: calc(100% - 54px);
+}
+
+.container .qrcode-text input {
+  border: 0;
+  color: #555;
+  width: 32px;
+  float: right;
+  margin: auto;
+  height: 129px;
+  outline: none;
+  font-size: 36px;
+  cursor: pointer;
+  background: #FFF;
+  padding: 5px 10px;
+  display: inline-block;
+  font-family: arial,sans-serif;
+  border-left: solid 1px rgba(0,0,0,0.2);
+  transition: 300ms ease background-color;
+}
+
+.container .qrcode-text input:hover {
+  background: #ececec;
+}
+
+.container .qrcode-svg {
+  display: flex;
+  margin-top: 38px;
+  min-height: 350px;
+  align-items: center;
+  background-color: #FFF;
+  justify-content: center;
+  border-top: solid 1px rgba(0,0,0,0.2);
+}
+
+html[context="popup"] .qrcode-svg {
+  height: 350px;
+}
+
+html[context="app"] .qrcode-svg {
+  height: 450px;
+}
+
+html[context="win"] .qrcode-svg {
+  height: 450px;
+}
+
+html[context="tab"] .qrcode-svg {
+  height: 550px;
+}
+
+.container .qrcode-svg svg {
+  height: 100%;
+}
+
+.footer {
+  left: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 24px;
+  text-align: left;
+  line-height: 24px;
+  text-indent: 10px;
+  position: absolute;
+  font-family: monospace;
+  color: rgba(39, 39, 39, 0.7);
+  background-color: transparent;
+}
+
+.reload, .download {
+  top: 3px;
+  border: 0;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  overflow: hidden;
+  line-height: 32px;
+  text-align: center;
+  position: absolute;
+  background-color: transparent;
+}
+
+.reload {
+  right: 36px;
+}
+
+.download {
+  right: 3px;
+}
+
+.reload svg, .download svg {
+  fill: grey;
+  vertical-align: middle;
+}
