@@ -59,7 +59,7 @@ var config = {
     "write": function (id, data) {
       if (id) {
         id = id + config.storage.id;
-        if (data) {
+        if (data !== '' && data !== null && data !== undefined) {
           var tmp = {};
           tmp[id] = data;
           config.storage.local[id] = data;
@@ -210,7 +210,7 @@ var config = {
             document.location.reload();
           });
           /*  */
-          showreload.addEventListener("click", function (e) {
+          showreload.addEventListener("change", function (e) {
             config.app.prefs.reload = e.target.checked;
             reload.style.display = e.target.checked ? "block" : "none";
           });

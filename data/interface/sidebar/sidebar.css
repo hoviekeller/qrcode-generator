@@ -55,8 +55,12 @@
 	overflow: auto;
 	position: fixed;
 	background-color: #FFF;
-	border-right: solid 1px rgba(0,0,0,0.3);
+	border-right: solid 1px rgba(0,0,0,0.2);
   transition: all 350ms cubic-bezier(.6, .05, .28, .91);
+}
+
+html[context="app"] .sidebar #box {
+  border-bottom: solid 1px rgba(0,0,0,.2);
 }
 
 .sidebar #box.active {

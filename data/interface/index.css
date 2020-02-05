@@ -27,12 +27,13 @@ body {
   color: #555;
   margin: auto;
   resize: none;
-  height: 116px;
+  height: 115px;
   outline: none;
   font-size: 12px;
   padding: 5px 10px;
   display: inline-block;
   background-color: #FFF;
+  vertical-align: middle;
   width: calc(100% - 54px);
 }
 
@@ -42,13 +43,14 @@ body {
   width: 32px;
   float: right;
   margin: auto;
-  height: 129px;
+  height: 125px;
   outline: none;
   font-size: 36px;
   cursor: pointer;
   background: #FFF;
   padding: 5px 10px;
   display: inline-block;
+  vertical-align: middle;
   font-family: arial,sans-serif;
   border-left: solid 1px rgba(0,0,0,0.2);
   transition: 300ms ease background-color;
@@ -95,6 +97,7 @@ html[context="tab"] .qrcode-svg {
   padding: 0;
   width: 100%;
   height: 24px;
+  font-size: 11px;
   text-align: left;
   line-height: 24px;
   text-indent: 10px;

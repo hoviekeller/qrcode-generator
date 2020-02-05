@@ -7,7 +7,7 @@
   "background": {"scripts": ["lib/background.js"]},
   "permissions": ["storage", "activeTab", "contextMenus"],
   "homepage_url": "https://mybrowseraddon.com/qrcode-generator.html",
-  "description": "Generate QR code from any text and save it as an svg file",
+  "description": "Generate QR code from any text and save it as an SVG image",
   "browser_action": {
     "default_title": "QR Code Generator",
     "default_icon": {
