@@ -1,90 +1,123 @@
+var background = (function () {
+  var tmp = {};
+  var context = document.documentElement.getAttribute("context");
+  if (context === "webapp") {
+    return {
+      "send": function () {},
+      "receive": function (callback) {}
+    }
+  } else {
+    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+      for (var id in tmp) {
+        if (tmp[id] && (typeof tmp[id] === "function")) {
+          if (request.path === "background-to-interface") {
+            if (request.method === id) tmp[id](request.data);
+          }
+        }
+      }
+    });
+    /*  */
+    return {
+      "receive": function (id, callback) {tmp[id] = callback},
+      "send": function (id, data) {chrome.runtime.sendMessage({"path": "interface-to-background", "method": id, "data": data})}
+    }
+  }
+})();
+
 var config = {
   "timeout": {},
   "elements": {},
-  "context": {
-    "app": window !== window.top,
-    "extension": window === window.top,
-    "win": document.location.href.indexOf("win") !== -1,
-    "popup": document.location.href.indexOf("popup") !== -1
-  },
   "addon": {
-    "version": function () {return chrome && chrome.runtime ? chrome.runtime.getManifest().version : ''},
-    "homepage": function () {return chrome && chrome.runtime ? chrome.runtime.getManifest().homepage_url : ''}
+    "homepage": function () {
+      return chrome.runtime.getManifest().homepage_url;
+    }
+  },
+  "resize": {
+    "timeout": null,
+    "method": function () {
+      if (config.resize.timeout) window.clearTimeout(config.resize.timeout);
+      config.resize.timeout = window.setTimeout(function () {
+        config.storage.write("size", {
+          "width": window.innerWidth || window.outerWidth,
+          "height": window.innerHeight || window.outerHeight
+        });
+      }, 1000);
+    }
   },
   "load": function () {
     config.elements.svg = document.querySelector(".qrcode-svg");
     config.elements.text = document.querySelector(".qrcode-text");
     config.elements.items = document.querySelector(".sidebar #items");
     /*  */
-    config.elements.text.querySelector("input").addEventListener("click", function () {
-      config.app.generate.qrcode.svg();
-    });
-    /*  */
-    config.elements.text.querySelector("textarea").addEventListener("change", function () {
-      config.elements.text.querySelector("input").click();
-    });
+    var input = config.elements.text.querySelector("input");
+    if (input) {
+      input.addEventListener("click", function () {
+        config.app.generate.qrcode.svg();
+      });
+    }
     /*  */
     config.storage.load(config.app.start);
     window.removeEventListener("load", config.load, false);
   },
   "storage": {
-    "id": '',
     "local": {},
-    "read": function (id) {return config.storage.local[id + config.storage.id]},
+    "read": function (id) {
+      return config.storage.local[id];
+    },
     "load": function (callback) {
-      if (config.context.extension) {
-        chrome.storage.local.get(null, function (e) {
-          config.storage.local = e;
-          callback();
-        });
-      } else {
-        config.storage.id = window.top.location.pathname.replace(/\//g, '');
-        var keys = Object.keys(localStorage);
-        var i = keys.length;
-        while (i--) {
-          if (keys[i]) {
-            var item = localStorage.getItem(keys[i]);
-            if (item) {
-              try {
-                config.storage.local[keys[i]] = JSON.parse(item);
-              } catch (e) {
-                config.storage.local[keys[i]] = item;
-              }
-            }
-          }
-        }
+      chrome.storage.local.get(null, function (e) {
+        config.storage.local = e;
         callback();
-      }
+      });
     },
     "write": function (id, data) {
       if (id) {
-        id = id + config.storage.id;
         if (data !== '' && data !== null && data !== undefined) {
           var tmp = {};
           tmp[id] = data;
           config.storage.local[id] = data;
-          if (config.context.extension) {
-            chrome.storage.local.set(tmp, function () {});
-          } else {
-            localStorage.setItem(id, JSON.stringify(data));
-          }
+          chrome.storage.local.set(tmp, function () {});
         } else {
           delete config.storage.local[id];
-          if (config.context.extension) {
-            chrome.storage.local.remove(id, function () {});
-          } else {
-            localStorage.removeItem(id);
+          chrome.storage.local.remove(id, function () {});
+        }
+      }
+    }
+  },
+  "port": {
+    "name": '',
+    "connect": function () {
+      config.port.name = "webapp";
+      var context = document.documentElement.getAttribute("context");
+      /*  */
+      if (chrome.runtime) {
+        if (chrome.runtime.connect) {
+          if (context !== config.port.name) {
+            if (document.location.search === "?tab") config.port.name = "tab";
+            if (document.location.search === "?win") config.port.name = "win";
+            if (document.location.search === "?popup") config.port.name = "popup";
+            /*  */
+            if (config.port.name === "popup") {
+              document.body.style.width = "500px";
+              document.body.style.height = "520px";
+            }
+            /*  */
+            chrome.runtime.connect({
+              "name": config.port.name
+            });
           }
         }
       }
+      /*  */
+      document.documentElement.setAttribute("context", config.port.name);
     }
   },
   "app": {
     "prefs": {
       set time (val) {config.storage.write("time", val)},
-      set reload (val) {config.storage.write("reload", val)},
+      set realtime (val) {config.storage.write("realtime", val)},
       get time () {return config.storage.read("time") !== undefined ? config.storage.read("time") : true},
-      get reload () {return config.storage.read("reload") !== undefined ? config.storage.read("reload") : true},
+      get realtime () {return config.storage.read("realtime") !== undefined ? config.storage.read("realtime") : false},
       "qrcode": {
         set index (val) {config.storage.write("index", val)},
         set contents (val) {config.storage.write("contents", val)},
@@ -92,24 +125,17 @@ var config = {
         get contents () {return config.storage.read("contents") !== undefined ? config.storage.read("contents") : []}
       }
     },
-    "start": function () {
-      config.app.listeners.click.add();
-      config.app.render.all.qrcode.items();
-      config.app.render.last.qrcode.item();
-      /*  */
-      var context = document.location.search ? document.location.search.replace('?', '') : "app";
-      document.documentElement.setAttribute("context", context);
-      /*  */
-      window.setInterval(config.app.time.update, 1000);
-    },
     "make": {
       "download": {
         "url": function (content) {
           if (content) {
-            var a = document.querySelector(".download").querySelector("a");
-            if (a) {
-              var href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(content);
-              a.href = href;
+            var download = document.querySelector(".download");
+            if (download) {
+              var a = download.querySelector('a');
+              if (a) {
+                var href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(content);
+                a.href = href;
+              }
             }
           }
         }
@@ -129,9 +155,26 @@ var config = {
         time.textContent = format(now.getHours()) + ':' + format(now.getMinutes()) + ':' + format(now.getSeconds());
       }
     },
+    "start": function () {
+      config.app.listeners.click.add();
+      config.app.listeners.textarea.add();
+      config.app.render.all.qrcode.items();
+      config.app.render.last.qrcode.item();
+      /*  */
+      var context = document.documentElement.getAttribute("context");
+      if (context === "win") {
+        window.addEventListener("focus", function () {
+          config.storage.load(function () {
+            config.app.render.last.qrcode.item();
+          });
+        });
+      }
+      /*  */
+      window.setInterval(config.app.time.update, 1000);
+    },
     "generate": {
       "qrcode": {
-        "svg": function () {
+        "svg": function () {          
           var content = config.elements.text.querySelector("textarea").value;
           if (content) {
             var parser = new DOMParser();
@@ -152,7 +195,7 @@ var config = {
             var tmp = config.app.prefs.qrcode.contents;
             if (tmp.indexOf(content) === -1) {
               tmp.push(content);
-              if (tmp.length > 10) tmp.shift();
+              if (tmp.length > 15) tmp.shift();
               config.app.prefs.qrcode.contents = tmp;
               config.app.render.all.qrcode.items();
             }
@@ -173,6 +216,20 @@ var config = {
       }
     },
     "listeners": {
+      "textarea": {
+        "add": function () {
+          var textarea = config.elements.text.querySelector("textarea");
+          if (textarea) {
+            if (config.app.prefs.realtime) {
+              textarea.addEventListener("input", config.app.generate.qrcode.svg);
+              textarea.removeEventListener("change", config.app.generate.qrcode.svg);
+            } else {
+              textarea.addEventListener("change", config.app.generate.qrcode.svg);
+              textarea.removeEventListener("input", config.app.generate.qrcode.svg);
+            }
+          }
+        }
+      },
       "click": {
         "for": {
           "close": function (e) {
@@ -191,28 +248,43 @@ var config = {
               config.app.prefs.qrcode.index = parseInt(index);
               config.app.generate.qrcode.svg();
             }
+          },
+          "btn": function (e) {
+            var div = e.target.closest("div");
+            if (div) {
+              var key = div.getAttribute("class");
+              if (key && key.indexOf("qrcode-") !== -1) {
+                var btn = document.getElementById("btn");
+                if (btn) {
+                  var state = btn.getAttribute("class");
+                  if (state && state === "active") {
+                    btn.click();
+                  }
+                }
+              }
+            }
           }
         },
         "add": function () {
-          var reload = document.querySelector(".reload");
           var footer = document.querySelector(".footer");
-          var support = document.querySelector(".support");
-          var donation = document.querySelector(".donation");
+          var reload = document.getElementById("reload");
+          var support = document.getElementById("support");
+          var download = document.querySelector(".download");
+          var donation = document.getElementById("donation");
           var datetime = document.getElementById("datetime");
-          var showreload = document.getElementById("showreload");
+          var realtime = document.getElementById("realtime");
           /*  */
           datetime.checked = config.app.prefs.time;
-          showreload.checked = config.app.prefs.reload;
+          realtime.checked = config.app.prefs.realtime;
           footer.style.display = config.app.prefs.time ? "block" : "none";
-          reload.style.display = config.app.prefs.reload ? "block" : "none";
           /*  */
           reload.addEventListener("click", function () {
             document.location.reload();
           });
           /*  */
-          showreload.addEventListener("change", function (e) {
-            config.app.prefs.reload = e.target.checked;
-            reload.style.display = e.target.checked ? "block" : "none";
+          realtime.addEventListener("change", function (e) {
+            config.app.prefs.realtime = e.target.checked;
+            config.app.listeners.textarea.add();
           });
           /*  */
           datetime.addEventListener("change", function (e) {
@@ -222,17 +294,25 @@ var config = {
           /*  */
           support.addEventListener("click", function () {
             var url = config.addon.homepage();
-            if (config.context.extension) {
-              chrome.tabs.create({"url": url, "active": true});
-            }
+            chrome.tabs.create({"url": url, "active": true});
           }, false);
           /*  */
           donation.addEventListener("click", function () {
             var url = config.addon.homepage() + "?reason=support";
-            if (config.context.extension) {
-              chrome.tabs.create({"url": url, "active": true});
-            }
+            chrome.tabs.create({"url": url, "active": true});
           }, false);
+          /*  */
+          download.addEventListener("click", function (e) {
+            var a = e.target.querySelector('a');
+            if (a) {
+              if (a.href) {
+                a.click();
+                /*  */
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }
+          });
         }
       }
     },
@@ -248,7 +328,7 @@ var config = {
                 var content = items[i];
                 if (content) {
                   var item = config.app.render.current.qrcode.item(i, content);
-                  config.elements.items.appendChild(item);
+                  config.elements.items.querySelector(".history").appendChild(item);
                 }
               }
             }
@@ -327,51 +407,8 @@ var config = {
   }
 };
 
-document.addEventListener("DOMContentLoaded", function () {
-  var support = document.querySelector(".support");
-  var donation = document.querySelector(".donation");
-  if (support) support.style.display = config.context.extension ? "table-cell" : "none";
-  if (donation) donation.style.display = config.context.extension ? "table-cell" : "none";
-});
-
-window.addEventListener("resize", function () {
-  var context = document.documentElement.getAttribute("context");
-  if (context === "win") {
-    if (config.timeout.resize) window.clearTimeout(config.timeout.resize);
-    config.timeout.resize = window.setTimeout(function () {
-      config.storage.write("width", window.innerWidth || window.outerWidth);
-      config.storage.write("height", window.innerHeight || window.outerHeight);
-    }, 1000);
-  }
-}, false);
-
-window.addEventListener("click", function (e) {
-  var div = e.target.closest("div");
-  if (div) {
-    var key = div.getAttribute("class");
-    if (key && key.indexOf("qrcode-") !== -1) {
-      var btn = document.getElementById("btn");
-      if (btn) {
-        var state = btn.getAttribute("class");
-        if (state && state === "active") {
-          btn.click();
-        }
-      }
-    }
-  }
-}, false);
-
-if (config.context.popup) {
-  document.body.style.width = "500px";
-  document.body.style.height = "520px";
-}
-
-if (config.context.win) {
-  window.addEventListener("focus", function () {
-    config.storage.load(function () {
-      config.app.render.last.qrcode.item();
-    });
-  });
-}
+config.port.connect();
 
 window.addEventListener("load", config.load, false);
+window.addEventListener("resize", config.resize.method, false);
+window.addEventListener("click", config.app.listeners.click.for.btn, false);

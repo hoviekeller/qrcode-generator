@@ -21,8 +21,8 @@
 }
 
 .sidebar #btn {
-  top: 10px;
-  left: 10px;
+  top: 14px;
+  left: 14px;
 	z-index: 5;
 	position: fixed;
 	cursor: pointer;
@@ -37,11 +37,15 @@
   transition: transform 500ms cubic-bezier(.6, .05, .28, .91), opacity 500ms, background-color 250ms;
 }
 
-.sidebar #btn.active {left: 226px}
 .sidebar #btn.active #middle {opacity: 0}
 .sidebar #btn.active div {background-color: #777}
 .sidebar #btn.active #top {transform: translateY(4px) rotate(-135deg)}
 .sidebar #btn.active #bottom {transform: translateY(-10px) rotate(-45deg)}
+
+.sidebar #btn.active {
+	top: 17px;
+	left: 221px;
+}
 
 .sidebar #box {
   top: 0;
@@ -52,15 +56,10 @@
   left: -250px;
   width: 250px;
   height: 100%;
-	overflow: auto;
 	position: fixed;
-	background-color: #FFF;
+	background-color: #fff;
 	border-right: solid 1px rgba(0,0,0,0.2);
   transition: all 350ms cubic-bezier(.6, .05, .28, .91);
-}
-
-html[context="app"] .sidebar #box {
-  border-bottom: solid 1px rgba(0,0,0,.2);
 }
 
 .sidebar #box.active {
@@ -69,18 +68,27 @@ html[context="app"] .sidebar #box {
 }
 
 .sidebar #items {
-  top: 15px;
+  top: 28px;
 	position: relative;
+	border-top: dotted 1px rgba(0,0,0,0.2);
+}
+
+.sidebar .history {
+	overflow-x: hidden;
+	overflow-y: scroll;
+	height: calc(100vh - 136px);
+	border-top: dotted 1px rgba(0,0,0,0.2);
 }
 
 .sidebar .item {
 	padding: 0;
-	height: 36px;
+	height: 38px;
 	margin: 5px 0;
 	font-size: 12px;
-	line-height: 36px;
-	background-color: #FFF;
-	border-left: solid 3px #FFF;
+	line-height: 38px;
+	margin-right: 5px;
+	background-color: #fff;
+	border-left: solid 3px #fff;
 	transition: 300ms ease border-color;
 }
 
@@ -90,7 +98,7 @@ html[context="app"] .sidebar #box {
 
 .sidebar .item label {
   color: #333;
-	width: 170px;
+	width: 150px;
 	cursor: pointer;
 	overflow: hidden;
 	user-select: none;
@@ -98,9 +106,7 @@ html[context="app"] .sidebar #box {
 	white-space: nowrap;
 	display: inline-block;
 	vertical-align: middle;
-  -moz-user-select: none;
 	text-overflow: ellipsis;
-  -webkit-user-select: none;
 }
 
 .sidebar .item input {
@@ -132,28 +138,18 @@ html[context="app"] .sidebar #box {
 	height: 100%;
 	cursor: pointer;
 	font-size: 10px;
-	background: #FFF;
+	background: #fff;
 	line-height: 36px;
 	transition: 300ms ease all;
 }
 
 .sidebar .item input[type="button"]:hover {
-	color: #FFF;
+	color: #fff;
 	background-color: #e00606;
 }
 
-.sidebar .separator {
-  border: 0;
-  outline: 0;
-  padding: 0;
-  height: 1px;
-  width: 100%;
-  margin: 10px 0;
-  background-color: rgba(0,0,0,0.2);
-}
-
 .sidebar .name {
-  top: 8px;
+  top: 16px;
   font-size: 12px;
 	margin: 0 0 0 5px;
   user-select: none;
@@ -205,4 +201,8 @@ html[context="app"] .sidebar #box {
   80% {transform: rotate(288deg)}
   90% {transform: rotate(324deg)}
   100% {transform: rotate(360deg)}
+}
+
+html[context="app"] .sidebar #box {
+  border-bottom: solid 1px rgba(0,0,0,.2);
 }
