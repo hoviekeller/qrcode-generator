@@ -9,7 +9,7 @@ You can install this app as a PWA on your mobile device, moreover, it is availab
 Chrome: https://chrome.google.com/webstore/detail/qr-code-generator/pfdnbeicnlgaliljnkekjigcgnlgkjfc  
 Opera: https://addons.opera.com/en/extensions/details/qr-code-generator-6/  
 Firefox: https://addons.mozilla.org/en-US/firefox/addon/qr-code-generator/  
-Edge:   
+Edge: https://microsoftedge.microsoft.com/addons/detail/ijbogjahdpdkkhbejdghbdfialighcii  
 
 Webapp & PWA: https://webbrowsertools.com/qrcode-generator/  
 
