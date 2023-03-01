@@ -139,7 +139,7 @@
 	cursor: pointer;
 	font-size: 10px;
 	background: #fff;
-	line-height: 36px;
+	line-height: 42px;
 	transition: 300ms ease all;
 }
 
@@ -151,6 +151,7 @@
 .sidebar .name {
   top: 16px;
   font-size: 12px;
+  font-weight: 600;
 	margin: 0 0 0 5px;
   user-select: none;
   position: relative;

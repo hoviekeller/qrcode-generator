@@ -9,8 +9,8 @@ body {
 }
 
 .toolbar {
-  right: 0;
-  top: 42px;
+  top: 44px;
+  right: 1px;
   z-index: 11;
   position: absolute;
 }
@@ -56,13 +56,14 @@ body {
 
 .container .qrcode-text textarea {
   border: 0;
-  color: #555;
+  color: #333;
   resize: none;
   height: 125px;
   outline: none;
   padding: 10px;
-  font-size: 12px;
+  font-size: 14px;
   margin: 1px auto;
+  line-height: 22px;
   display: inline-block;
   background-color: #fff;
   box-sizing: border-box;
@@ -112,14 +113,14 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
+  color: #555;
   height: 28px;
-  font-size: 11px;
+  font-size: 12px;
   text-align: left;
   line-height: 28px;
   text-indent: 10px;
   position: absolute;
   font-family: monospace;
-  color: rgba(39, 39, 39, 0.7);
   background-color: transparent;
 }
 

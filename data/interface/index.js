@@ -1,14 +1,14 @@
 var background = (function () {
-  var tmp = {};
-  var context = document.documentElement.getAttribute("context");
+  let tmp = {};
+  let context = document.documentElement.getAttribute("context");
   if (context === "webapp") {
     return {
       "send": function () {},
       "receive": function (callback) {}
     }
   } else {
-    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-      for (var id in tmp) {
+    chrome.runtime.onMessage.addListener(function (request) {
+      for (let id in tmp) {
         if (tmp[id] && (typeof tmp[id] === "function")) {
           if (request.path === "background-to-interface") {
             if (request.method === id) tmp[id](request.data);
@@ -18,8 +18,18 @@ var background = (function () {
     });
     /*  */
     return {
-      "receive": function (id, callback) {tmp[id] = callback},
-      "send": function (id, data) {chrome.runtime.sendMessage({"path": "interface-to-background", "method": id, "data": data})}
+      "receive": function (id, callback) {
+        tmp[id] = callback;
+      },
+      "send": function (id, data) {
+        chrome.runtime.sendMessage({
+          "data": data,
+          "method": id, 
+          "path": "interface-to-background"
+        }, function () {
+          return chrome.runtime.lastError;
+        });
+      }
     }
   }
 })();
@@ -49,7 +59,7 @@ var config = {
     config.elements.text = document.querySelector(".qrcode-text");
     config.elements.items = document.querySelector(".sidebar #items");
     /*  */
-    var input = config.elements.text.querySelector("input");
+    const input = config.elements.text.querySelector("input");
     if (input) {
       input.addEventListener("click", function () {
         config.app.generate.qrcode.svg();
@@ -73,13 +83,13 @@ var config = {
     "write": function (id, data) {
       if (id) {
         if (data !== '' && data !== null && data !== undefined) {
-          var tmp = {};
+          let tmp = {};
           tmp[id] = data;
           config.storage.local[id] = data;
-          chrome.storage.local.set(tmp, function () {});
+          chrome.storage.local.set(tmp);
         } else {
           delete config.storage.local[id];
-          chrome.storage.local.remove(id, function () {});
+          chrome.storage.local.remove(id);
         }
       }
     }
@@ -88,7 +98,7 @@ var config = {
     "name": '',
     "connect": function () {
       config.port.name = "webapp";
-      var context = document.documentElement.getAttribute("context");
+      const context = document.documentElement.getAttribute("context");
       /*  */
       if (chrome.runtime) {
         if (chrome.runtime.connect) {
@@ -125,15 +135,25 @@ var config = {
         get contents () {return config.storage.read("contents") !== undefined ? config.storage.read("contents") : []}
       }
     },
+    "time": {
+      "update": function () {
+        const now = document.getElementById("now");
+        /*  */
+        now.textContent = new Intl.DateTimeFormat("en-US", {
+          "timeStyle": "medium",
+          "dateStyle": "medium"
+        }).format();
+      }
+    },
     "make": {
       "download": {
         "url": function (content) {
           if (content) {
-            var download = document.querySelector(".download");
+            const download = document.querySelector(".download");
             if (download) {
-              var a = download.querySelector('a');
+              const a = download.querySelector('a');
               if (a) {
-                var href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(content);
+                const href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(content);
                 a.href = href;
               }
             }
@@ -141,27 +161,13 @@ var config = {
         }
       },
     },
-    "time": {
-      "update": function () {
-        var now = new Date();
-        /*  */
-        const date = document.getElementById("date");
-        const time = document.getElementById("time");
-        const format = (s) => {return ("00" + s).substr(-2)};
-        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        /*  */
-        date.textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + format(now.getDate());
-        time.textContent = format(now.getHours()) + ':' + format(now.getMinutes()) + ':' + format(now.getSeconds());
-      }
-    },
     "start": function () {
       config.app.listeners.click.add();
       config.app.listeners.textarea.add();
       config.app.render.all.qrcode.items();
       config.app.render.last.qrcode.item();
       /*  */
-      var context = document.documentElement.getAttribute("context");
+      const context = document.documentElement.getAttribute("context");
       if (context === "win") {
         window.addEventListener("focus", function () {
           config.storage.load(function () {
@@ -174,11 +180,11 @@ var config = {
     },
     "generate": {
       "qrcode": {
-        "svg": function () {          
-          var content = config.elements.text.querySelector("textarea").value;
+        "svg": function () {
+          const content = config.elements.text.querySelector("textarea").value;
           if (content) {
-            var parser = new DOMParser();
-            var output = new QRCode({
+            const parser = new DOMParser();
+            const output = new QRCode({
               "join": true,
               "padding": 1,
               "color": "#333",
@@ -189,10 +195,10 @@ var config = {
             /*  */
             config.elements.svg.textContent = '';
             config.app.make.download.url(output.svg());
-            var parsed = parser.parseFromString(output.svg(), "application/xml");
+            const parsed = parser.parseFromString(output.svg(), "application/xml");
             config.elements.svg.appendChild(parsed.querySelector("svg"));
             /*  */
-            var tmp = config.app.prefs.qrcode.contents;
+            const tmp = config.app.prefs.qrcode.contents;
             if (tmp.indexOf(content) === -1) {
               tmp.push(content);
               if (tmp.length > 15) tmp.shift();
@@ -201,9 +207,9 @@ var config = {
             }
             /*  */
             [...config.elements.items.querySelectorAll(".qrcode")].map(function (item) {
-              var i = item.getAttribute("index");
-              var a = item.getAttribute("content");
-              var b = config.elements.text.querySelector("textarea").value;
+              const i = item.getAttribute("index");
+              const a = item.getAttribute("content");
+              const b = config.elements.text.querySelector("textarea").value;
               if (a === b) {
                 item.setAttribute("active", '');
                 config.app.prefs.qrcode.index = parseInt(i);
@@ -218,7 +224,7 @@ var config = {
     "listeners": {
       "textarea": {
         "add": function () {
-          var textarea = config.elements.text.querySelector("textarea");
+          const textarea = config.elements.text.querySelector("textarea");
           if (textarea) {
             if (config.app.prefs.realtime) {
               textarea.addEventListener("input", config.app.generate.qrcode.svg);
@@ -233,16 +239,16 @@ var config = {
       "click": {
         "for": {
           "close": function (e) {
-            var tmp = config.app.prefs.qrcode.contents;
-            var index = parseInt(e.target.getAttribute("index"));
+            const tmp = config.app.prefs.qrcode.contents;
+            const index = parseInt(e.target.getAttribute("index"));
             tmp.splice(index, 1);
             config.app.prefs.qrcode.contents = tmp;
             config.app.render.all.qrcode.items();
           },
           "svg": function (e) {
-            var parent = e.target.closest("div");
-            var index = parent.getAttribute("index");
-            var content = parent.getAttribute("content");
+            const parent = e.target.closest("div");
+            const index = parent.getAttribute("index");
+            const content = parent.getAttribute("content");
             if (content) {
               config.elements.text.querySelector("textarea").value = content;
               config.app.prefs.qrcode.index = parseInt(index);
@@ -250,13 +256,13 @@ var config = {
             }
           },
           "btn": function (e) {
-            var div = e.target.closest("div");
+            const div = e.target.closest("div");
             if (div) {
-              var key = div.getAttribute("class");
+              const key = div.getAttribute("class");
               if (key && key.indexOf("qrcode-") !== -1) {
-                var btn = document.getElementById("btn");
+                const btn = document.getElementById("btn");
                 if (btn) {
-                  var state = btn.getAttribute("class");
+                  const state = btn.getAttribute("class");
                   if (state && state === "active") {
                     btn.click();
                   }
@@ -266,13 +272,13 @@ var config = {
           }
         },
         "add": function () {
-          var footer = document.querySelector(".footer");
-          var reload = document.getElementById("reload");
-          var support = document.getElementById("support");
-          var download = document.querySelector(".download");
-          var donation = document.getElementById("donation");
-          var datetime = document.getElementById("datetime");
-          var realtime = document.getElementById("realtime");
+          const footer = document.querySelector(".footer");
+          const reload = document.getElementById("reload");
+          const support = document.getElementById("support");
+          const download = document.querySelector(".download");
+          const donation = document.getElementById("donation");
+          const datetime = document.getElementById("datetime");
+          const realtime = document.getElementById("realtime");
           /*  */
           datetime.checked = config.app.prefs.time;
           realtime.checked = config.app.prefs.realtime;
@@ -293,17 +299,17 @@ var config = {
           });
           /*  */
           support.addEventListener("click", function () {
-            var url = config.addon.homepage();
+            const url = config.addon.homepage();
             chrome.tabs.create({"url": url, "active": true});
           }, false);
           /*  */
           donation.addEventListener("click", function () {
-            var url = config.addon.homepage() + "?reason=support";
+            const url = config.addon.homepage() + "?reason=support";
             chrome.tabs.create({"url": url, "active": true});
           }, false);
           /*  */
           download.addEventListener("click", function (e) {
-            var a = e.target.querySelector('a');
+            const a = e.target.querySelector('a');
             if (a) {
               if (a.href) {
                 a.click();
@@ -322,12 +328,12 @@ var config = {
           "items": function () {
             [...config.elements.items.querySelectorAll(".qrcode")].map(function (e) {e.remove()});
             /*  */
-            var items = config.app.prefs.qrcode.contents;
+            const items = config.app.prefs.qrcode.contents;
             if (items && items.length) {
-              for (var i = 0; i < items.length; i++) {
-                var content = items[i];
+              for (let i = 0; i < items.length; i++) {
+                const content = items[i];
                 if (content) {
-                  var item = config.app.render.current.qrcode.item(i, content);
+                  const item = config.app.render.current.qrcode.item(i, content);
                   config.elements.items.querySelector(".history").appendChild(item);
                 }
               }
@@ -338,20 +344,20 @@ var config = {
       "last": {
         "qrcode": {
           "item": function () {
-            var content = config.storage.read("content");
+            const content = config.storage.read("content");
             if (content) {
               config.elements.text.querySelector("textarea").value = content;
               config.elements.text.querySelector("input").click();
             } else {
-              var items = [...config.elements.items.querySelectorAll(".qrcode")];
+              const items = [...config.elements.items.querySelectorAll(".qrcode")];
               if (items && items.length) {
                 items.map(function (item) {
-                  var index = item.getAttribute("index");
+                  const index = item.getAttribute("index");
                   if (index !== undefined) {
-                    var a = parseInt(index);
-                    var b = config.app.prefs.qrcode.index;
+                    const a = parseInt(index);
+                    const b = config.app.prefs.qrcode.index;
                     if (a === b) {
-                      var label = item.querySelector("label");
+                      const label = item.querySelector("label");
                       if (label) label.click();
                     }
                   }
@@ -367,9 +373,9 @@ var config = {
       "current": {
         "qrcode": {
           "item": function (index, content) {
-            var div = document.createElement("div");
+            const div = document.createElement("div");
             /*  */
-            var thumbnail = new QRCode({
+            const thumbnail = new QRCode({
               "join": true,
               "padding": 1,
               "color": "#333",
@@ -378,17 +384,17 @@ var config = {
               "background": "transparent"
             });
             /*  */
-            var parsed = (new DOMParser()).parseFromString(thumbnail.svg(), "application/xml");
-            var svg = parsed.querySelector("svg");
+            const parsed = (new DOMParser()).parseFromString(thumbnail.svg(), "application/xml");
+            const svg = parsed.querySelector("svg");
             svg.addEventListener("click", config.app.listeners.click.for.svg, false);
             div.appendChild(svg);
             /*  */
-            var label = document.createElement("label");
+            const label = document.createElement("label");
             label.textContent = content;
             label.addEventListener("click", config.app.listeners.click.for.svg, false);
             div.appendChild(label);
             /*  */
-            var input = document.createElement("input");
+            const input = document.createElement("input");
             input.value = '✕';
             input.setAttribute("index", index);
             input.setAttribute("type", "button");
