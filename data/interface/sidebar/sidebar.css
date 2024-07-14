@@ -33,12 +33,12 @@
 	width: 14px;
   height: 2px;
   margin-bottom: 5px;
-  background-color: grey;
+  background-color: #555;
   transition: transform 500ms cubic-bezier(.6, .05, .28, .91), opacity 500ms, background-color 250ms;
 }
 
 .sidebar #btn.active #middle {opacity: 0}
-.sidebar #btn.active div {background-color: #777}
+.sidebar #btn.active div {background-color: #555}
 .sidebar #btn.active #top {transform: translateY(4px) rotate(-135deg)}
 .sidebar #btn.active #bottom {transform: translateY(-10px) rotate(-45deg)}
 
@@ -52,13 +52,13 @@
 	padding: 0;
 	z-index: 4;
 	opacity: 0;
-	color: #777;
+	color: #333;
   left: -250px;
   width: 250px;
   height: 100%;
 	position: fixed;
 	background-color: #fff;
-	border-right: solid 1px rgba(0,0,0,0.2);
+	border-right: solid 1px rgba(0,0,0,0.25);
   transition: all 350ms cubic-bezier(.6, .05, .28, .91);
 }
 
@@ -68,23 +68,23 @@
 }
 
 .sidebar #items {
-  top: 28px;
+  top: 27px;
 	position: relative;
-	border-top: dotted 1px rgba(0,0,0,0.2);
+	border-top: dotted 1px rgba(0,0,0,0.25);
 }
 
 .sidebar .history {
 	overflow-x: hidden;
 	overflow-y: scroll;
-	height: calc(100vh - 136px);
-	border-top: dotted 1px rgba(0,0,0,0.2);
+	height: calc(100vh - 134px);
+	border-top: dotted 1px rgba(0,0,0,0.25);
 }
 
 .sidebar .item {
 	padding: 0;
 	height: 38px;
 	margin: 5px 0;
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 38px;
 	margin-right: 5px;
 	background-color: #fff;
@@ -134,10 +134,10 @@
 .sidebar .item input[type="button"] {
 	padding: 0;
 	width: 36px;
-	color: #555;
+	color: #333;
 	height: 100%;
 	cursor: pointer;
-	font-size: 10px;
+	font-size: 12px;
 	background: #fff;
 	line-height: 42px;
 	transition: 300ms ease all;
@@ -150,7 +150,7 @@
 
 .sidebar .name {
   top: 16px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 	margin: 0 0 0 5px;
   user-select: none;
@@ -168,7 +168,7 @@
 }
 
 .sidebar .support svg, .sidebar .donation svg {
-  fill: #777;
+  fill: #555;
 }
 
 .sidebar .support {bottom: 28px}
@@ -176,7 +176,7 @@
 
 .sidebar #date, .sidebar #time {
   color: grey;
-  font-size: 12px;
+  font-size: 13px;
   padding: 2px 6px;
   user-select: none;
   font-family: monospace;
