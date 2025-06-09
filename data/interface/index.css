@@ -137,6 +137,11 @@ body {
   text-align: center;
   position: absolute;
   background-color: transparent;
+  transition: 300ms ease background-color;
+}
+
+.download:hover {
+  background-color: rgba(0,0,0,0.05);
 }
 
 .download svg {

@@ -159,7 +159,7 @@ var config = {
             }
           }
         }
-      },
+      }
     },
     "start": function () {
       config.app.listeners.click.add();

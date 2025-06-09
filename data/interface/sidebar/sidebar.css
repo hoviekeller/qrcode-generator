@@ -99,7 +99,6 @@
 .sidebar .item label {
   color: #333;
 	width: 150px;
-	cursor: pointer;
 	overflow: hidden;
 	user-select: none;
 	padding: 0 0 0 5px;
@@ -139,6 +138,7 @@
 	cursor: pointer;
 	font-size: 12px;
 	background: #fff;
+	margin-top: -2px;
 	line-height: 42px;
 	transition: 300ms ease all;
 }
