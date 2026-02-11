@@ -1,0 +1,53 @@
+html[theme='dark'], 
+html[theme='dark'] body {
+  color: #ebebeb;
+  color-scheme: dark;
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .sidebar #box,
+html[theme='dark'] .container .qrcode-text input,
+html[theme='dark'] .container .qrcode-text textarea {
+  color: #ebebeb;
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .sidebar #btn div {
+  background-color: #ebebeb;
+}
+
+html[theme='dark'] .container .qrcode-svg svg {
+  filter: brightness(0.95);
+}
+
+html[theme='dark'] .sidebar .item,
+html[theme='dark'] .container .qrcode-svg {
+  background-color: #1e1e1e;
+}
+
+html[theme='dark'] .download:hover,
+html[theme='dark'] .toolbar table tr td:hover,
+html[theme='dark'] .container .qrcode-text input:hover {
+  background-color: rgb(255 255 255 / 5%);
+}
+
+html[theme='dark'] .footer,
+html[theme='dark'] .sidebar .item label,
+html[theme='dark'] .sidebar .item input[type='button'] {
+  color: #ebebeb;
+}
+
+html[theme='dark'] .sidebar #box,
+html[theme='dark'] .sidebar #items,
+html[theme='dark'] .sidebar .history,
+html[theme='dark'] .sidebar #page-wrapper,
+html[theme='dark'] .container .qrcode-svg,
+html[theme='dark'] .container .qrcode-text,
+html[theme='dark'] .container .qrcode-text input {
+  border-color: rgb(255 255 255 / 25%);
+}
+
+html[theme='dark'] .download svg,
+html[theme='dark'] .toolbar table tr td svg {
+  fill: #ebebeb;
+}

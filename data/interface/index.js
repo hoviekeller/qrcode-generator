@@ -125,8 +125,10 @@ var config = {
   "app": {
     "prefs": {
       set time (val) {config.storage.write("time", val)},
+      set theme (val) {config.storage.write("theme", val)},
       set realtime (val) {config.storage.write("realtime", val)},
       get time () {return config.storage.read("time") !== undefined ? config.storage.read("time") : true},
+      get theme () {return config.storage.read("theme") !== undefined ? config.storage.read("theme") : "light"},
       get realtime () {return config.storage.read("realtime") !== undefined ? config.storage.read("realtime") : false},
       "qrcode": {
         set index (val) {config.storage.write("index", val)},
@@ -167,7 +169,10 @@ var config = {
       config.app.render.all.qrcode.items();
       config.app.render.last.qrcode.item();
       /*  */
+      const theme = config.app.prefs.theme;
       const context = document.documentElement.getAttribute("context");
+      document.documentElement.setAttribute("theme", theme !== undefined ? theme : "light");
+      /*  */
       if (context === "win") {
         window.addEventListener("focus", function () {
           config.storage.load(function () {
@@ -272,6 +277,7 @@ var config = {
           }
         },
         "add": function () {
+          const theme = document.getElementById("theme");
           const footer = document.querySelector(".footer");
           const reload = document.getElementById("reload");
           const support = document.getElementById("support");
@@ -306,6 +312,14 @@ var config = {
           donation.addEventListener("click", function () {
             const url = config.addon.homepage() + "?reason=support";
             chrome.tabs.create({"url": url, "active": true});
+          }, false);
+          /*  */
+          theme.addEventListener("click", function () {
+            let attribute = document.documentElement.getAttribute("theme");
+            attribute = attribute === "dark" ? "light" : "dark";
+            /*  */
+            document.documentElement.setAttribute("theme", attribute);
+            config.app.prefs.theme = attribute;
           }, false);
           /*  */
           download.addEventListener("click", function (e) {

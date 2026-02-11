@@ -36,11 +36,13 @@ body {
 
 .toolbar table tr td svg {
   fill: #555;
+  margin-top: -2px;
   pointer-events: none;
   vertical-align: middle;
 }
 
-.container .qrcode-text, .container .qrcode-svg {
+.container .qrcode-svg,
+.container .qrcode-text {
   border: 0;
   padding: 0;
   width: 100%;
@@ -79,7 +81,7 @@ body {
   margin: auto;
   height: 125px;
   outline: none;
-  font-size: 36px;
+  font-size: 48px;
   cursor: pointer;
   background: #fff;
   padding: 5px 10px;
@@ -105,6 +107,7 @@ body {
 
 .container .qrcode-svg svg {
   height: 100%;
+  margin-top: 10px;
 }
 
 .footer {
@@ -150,22 +153,24 @@ body {
   vertical-align: middle;
 }
 
-html[context="tab"] .qrcode-svg {
+html[context='tab'] .qrcode-svg {
   height: 550px;
 }
 
-html[context="win"] .qrcode-svg {
+html[context='win'] .qrcode-svg {
   height: 450px;
 }
 
-html[context="popup"] .qrcode-svg {
+html[context='popup'] .qrcode-svg {
   height: 350px;
 }
 
-html[context="webapp"] .qrcode-svg {
+html[context='webapp'] .qrcode-svg {
   height: 450px;
 }
 
-html[context="webapp"] .toolbar {
+html[context='webapp'] .toolbar #reload,
+html[context='webapp'] .toolbar #support,
+html[context='webapp'] .toolbar #donation {
   display: none;
 }
